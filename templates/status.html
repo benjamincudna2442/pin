@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinterest Downloader API Status</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWixLrxjO8g8e4BHs3fI3pDVH6zT9iA2r2r3zL0B8X+0q0v0g8zL0B8X+0q0v0g8zL0B8X==" crossorigin="anonymous">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon: Pinterest Icon -->
+    <link rel="icon" href="https://www.pinterest.com/favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --pinterest-red: #E60023;
+            --pinterest-dark: #2C2C2C;
+            --pinterest-light: #F9F9F9;
+            --pinterest-accent: #FFD1D1;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--pinterest-light), #FFF);
+            color: var(--pinterest-dark);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--pinterest-red);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .nav-link {
+            color: #FFF !important;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: var(--pinterest-accent) !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('https://images.unsplash.com/photo-1611162616307-7d0f846e9dc4') no-repeat center/cover;
+            color: #FFF;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            animation: fadeInDown 1s ease-out;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out 0.3s;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: #FFF;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .status-card:hover {
+            transform: translateY(-10px);
+        }
+        .status-icon {
+            font-size: 3rem;
+            color: var(--pinterest-red);
+            animation: pulse 2s infinite;
+        }
+        .status-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: var(--pinterest-light);
+            padding: 50px 0;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #FFF;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-control:focus {
+            border-color: var(--pinterest-red);
+            box-shadow: 0 0 5px rgba(230, 0, 35, 0.3);
+        }
+        .btn-pinterest {
+            background: var(--pinterest-red);
+            border: none;
+            transition: background 0.3s;
+        }
+        .btn-pinterest:hover {
+            background: #C7001E;
+        }
+        #result {
+            margin-top: 20px;
+            display: none;
+            background: #F8F9FA;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 50px 0;
+        }
+        .feature-card {
+            background: #FFF;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: scale(1.05);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--pinterest-red);
+            margin-bottom: 15px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--pinterest-dark);
+            color: #FFF;
+            padding: 30px 0;
+            text-align: center;
+        }
+        footer a {
+            color: var(--pinterest-accent);
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: #FFF;
+        }
+        .social-icons a {
+            font-size: 1.5rem;
+            margin: 0 10px;
+            color: #FFF;
+            transition: color 0.3s;
+        }
+        .social-icons a:hover {
+            color: var(--pinterest-red);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .status-card { padding: 20px; }
+            .form-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="https://www.pinterest.com/static/images/favicon.png" alt="Pinterest Logo">
+                Pinterest Downloader API
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#status">Status</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#test">Test API</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://t.me/TheSmartDev" target="_blank">Updates</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Welcome to Pinterest Downloader API</h1>
+            <p>Download Pinterest videos and images effortlessly with our fast and reliable API.</p>
+            <a href="#test" class="btn btn-pinterest btn-lg mt-3">Try It Now</a>
+        </div>
+    </section>
+
+    <!-- Status Section -->
+    <section id="status" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">API Status</h2>
+            <div class="status-card">
+                <i id="status-icon" class="fas fa-circle-notch fa-spin status-icon"></i>
+                <h3 id="status-text" class="status-text">Checking...</h3>
+                <p id="status-message">We're verifying the API's availability.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form Section -->
+    <section id="test" class="form-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Test the API</h2>
+            <div class="form-container">
+                <form id="test-form">
+                    <div class="mb-3">
+                        <label for="pinterest-url" class="form-label">Enter Pinterest URL</label>
+                        <input type="url" class="form-control" id="pinterest-url" placeholder="e.g., https://pin.it/6GoDMRwmE" required>
+                    </div>
+                    <button type="submit" class="btn btn-pinterest w-100">Fetch Downloads</button>
+                </form>
+                <div id="result"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Why Use Our API?</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <i class="fas fa-video feature-icon"></i>
+                        <h4>Multiple Video Qualities</h4>
+                        <p>Download videos in 144p, 240p, 360p, 480p, or 720p.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <i class="fas fa-image feature-icon"></i>
+                        <h4>Thumbnail Support</h4>
+                        <p>Grab high-quality thumbnails for Pinterest pins.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <i class="fas fa-rocket feature-icon"></i>
+                        <h4>Fast & Reliable</h4>
+                        <p>Powered by savepin.app for quick and stable downloads.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Pinterest Downloader API. All rights reserved.</p>
+            <p>Developed by <a href="https://t.me/ISmartCoder" target="_blank">@ISmartCoder</a> | Updates on <a href="https://t.me/TheSmartDev" target="_blank">Telegram</a></p>
+            <div class="social-icons">
+                <a href="https://www.pinterest.com/" target="_blank" title="Pinterest"><i class="fab fa-pinterest"></i></a>
+                <a href="https://t.me/TheSmartDev" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // API Status Checker
+        async function checkApiStatus() {
+            const statusIcon = document.getElementById('status-icon');
+            const statusText = document.getElementById('status-text');
+            const statusMessage = document.getElementById('status-message');
+            const testUrl = 'https://pin.it/6GoDMRwmE';
+
+            try {
+                const response = await fetch(`/dl?url=${encodeURIComponent(testUrl)}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.media.length > 0) {
+                    statusIcon.classList.remove('fa-circle-notch', 'fa-spin');
+                    statusIcon.classList.add('fa-check-circle');
+                    statusIcon.style.color = '#28a745';
+                    statusText.textContent = 'API Online';
+                    statusMessage.textContent = 'The API is fully operational and ready to use!';
+                } else {
+                    throw new Error(data.message || 'No media found');
+                }
+            } catch (error) {
+                statusIcon.classList.remove('fa-circle-notch', 'fa-spin');
+                statusIcon.classList.add('fa-times-circle');
+                statusIcon.style.color = '#dc3545';
+                statusText.textContent = 'API Offline';
+                statusMessage.textContent = `Error: ${error.message}. Please try again later.`;
+            }
+        }
+
+        // Form Submission
+        document.getElementById('test-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const urlInput = document.getElementById('pinterest-url').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch(`/dl?url=${encodeURIComponent(urlInput)}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.media.length > 0) {
+                    let html = `<h5>Results for "${data.title}"</h5><ul class="list-group">`;
+                    data.media.forEach(item => {
+                        html += `
+                            <li class="list-group-item">
+                                <strong>${item.quality}</strong> (${item.type})
+                                <a href="${item.url}" class="btn btn-sm btn-pinterest float-end" target="_blank">Download</a>
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.message || 'No media found'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+            resultDiv.style.display = 'block';
+        });
+
+        // Run API status check on page load
+        window.onload = checkApiStatus;
+    </script>
+</body>
+</html>
