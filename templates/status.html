@@ -27,7 +27,6 @@
             line-height: 1.6;
         }
 
-        /* Navbar */
         .navbar {
             background: var(--pinterest-red);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -44,7 +43,6 @@
             color: var(--pinterest-accent) !important;
         }
 
-        /* Hero Section */
         .hero {
             background: url('https://images.unsplash.com/photo-1611162616307-7d0f846e9dc4') no-repeat center/cover;
             color: #FFF;
@@ -76,7 +74,6 @@
             animation: fadeInUp 1s ease-out 0.3s;
         }
 
-        /* Status Card */
         .status-card {
             background: #FFF;
             border-radius: 15px;
@@ -99,7 +96,6 @@
             margin: 15px 0;
         }
 
-        /* Form Section */
         .form-section {
             background: var(--pinterest-light);
             padding: 50px 0;
@@ -132,7 +128,6 @@
             border-radius: 5px;
         }
 
-        /* Features Section */
         .features-section {
             padding: 50px 0;
         }
@@ -152,7 +147,6 @@
             margin-bottom: 15px;
         }
 
-        /* Footer */
         footer {
             background: var(--pinterest-dark);
             color: #FFF;
@@ -176,7 +170,6 @@
             color: var(--pinterest-red);
         }
 
-        /* Animations */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -191,7 +184,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .hero p { font-size: 1rem; }
@@ -201,7 +193,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="/">
@@ -222,7 +213,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="container">
             <h1>Welcome to Pinterest Downloader API</h1>
@@ -231,7 +221,6 @@
         </div>
     </section>
 
-    <!-- Status Section -->
     <section id="status" class="py-5">
         <div class="container">
             <h2 class="text-center mb-4">API Status</h2>
@@ -243,7 +232,6 @@
         </div>
     </section>
 
-    <!-- Form Section -->
     <section id="test" class="form-section">
         <div class="container">
             <h2 class="text-center mb-4">Test the API</h2>
@@ -260,7 +248,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
     <section id="features" class="features-section">
         <div class="container">
             <h2 class="text-center mb-4">Why Use Our API?</h2>
@@ -290,10 +277,9 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 Pinterest Downloader API. All rights reserved.</p>
+            <p>© 2025 Pinterest Downloader API. All rights reserved.</p>
             <p>Developed by <a href="https://t.me/ISmartCoder" target="_blank">@ISmartCoder</a> | Updates on <a href="https://t.me/TheSmartDev" target="_blank">Telegram</a></p>
             <div class="social-icons">
                 <a href="https://www.pinterest.com/" target="_blank" title="Pinterest"><i class="fab fa-pinterest"></i></a>
@@ -302,7 +288,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         // API Status Checker
@@ -313,7 +298,10 @@
             const testUrl = 'https://pin.it/6GoDMRwmE';
 
             try {
-                const response = await fetch(`/dl?url=${encodeURIComponent(testUrl)}`);
+                const response = await fetch(`/dl?url=${encodeURIComponent(testUrl)}`, { timeout: 15000 });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text().slice(0, 100)}`);
+                }
                 const data = await response.json();
 
                 if (data.status === 'success' && data.media.length > 0) {
@@ -330,7 +318,10 @@
                 statusIcon.classList.add('fa-times-circle');
                 statusIcon.style.color = '#dc3545';
                 statusText.textContent = 'API Offline';
-                statusMessage.textContent = `Error: ${error.message}. Please try again later.`;
+                statusMessage.textContent = `Error: ${error.message}. Check the URL or try again later.`;
+                if (error.message.includes('<!doctype')) {
+                    statusMessage.textContent += ' (Received HTML instead of JSON, possible server issue)';
+                }
             }
         }
 
@@ -343,7 +334,10 @@
             resultDiv.innerHTML = '<p>Loading...</p>';
 
             try {
-                const response = await fetch(`/dl?url=${encodeURIComponent(urlInput)}`);
+                const response = await fetch(`/dl?url=${encodeURIComponent(urlInput)}`, { timeout: 15000 });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text().slice(0, 100)}`);
+                }
                 const data = await response.json();
 
                 if (data.status === 'success' && data.media.length > 0) {
@@ -360,9 +354,15 @@
                     resultDiv.innerHTML = html;
                 } else {
                     resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.message || 'No media found'}</div>`;
+                    if (data.html_snippet) {
+                        resultDiv.innerHTML += `<pre class="mt-2 text-muted">Debug: ${data.html_snippet}</pre>`;
+                    }
                 }
             } catch (error) {
                 resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                if (error.message.includes('<!doctype')) {
+                    resultDiv.innerHTML += '<p class="text-muted">Received HTML instead of JSON, possible server issue.</p>';
+                }
             }
             resultDiv.style.display = 'block';
         });
